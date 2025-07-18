@@ -268,8 +268,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const match = spreadsheetId.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
           if (match) {
             spreadsheetId = match[1];
+            console.log('✅ Extracted spreadsheet ID:', spreadsheetId);
+          }
+        } else if (spreadsheetId?.includes('/edit')) {
+          // Handle URLs like: 1r_lJ1xERb8aLOViEG9nauq0ZK2zRp1566F2LQBbplpk/edit?gid=0#gid=0
+          const match = spreadsheetId.match(/^([a-zA-Z0-9-_]+)\/edit/);
+          if (match) {
+            spreadsheetId = match[1];
+            console.log('✅ Extracted spreadsheet ID from edit URL:', spreadsheetId);
           }
         }
+        
+        console.log('📋 Using spreadsheet ID:', spreadsheetId);
         
         const values = [[
           order.id,
@@ -293,6 +303,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           range: 'Orders!A:N',
           rowData: values[0]
         });
+        
+        // First, try to get the spreadsheet to check if it exists and we have access
+        try {
+          await sheets.spreadsheets.get({ spreadsheetId });
+          console.log('✅ Spreadsheet access confirmed');
+        } catch (accessError) {
+          console.error('❌ Cannot access spreadsheet:', accessError);
+          throw new Error(`Cannot access Google Sheet. Please make sure the sheet ID is correct and the service account (${process.env.GOOGLE_CLIENT_EMAIL}) has been given editor access to the sheet.`);
+        }
         
         const result = await sheets.spreadsheets.values.append({
           spreadsheetId,

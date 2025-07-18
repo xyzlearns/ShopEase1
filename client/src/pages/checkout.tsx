@@ -286,6 +286,11 @@ export default function Checkout() {
                           src="/assets/upi-qr.jpeg"
                           alt="UPI QR Code"
                           className="w-32 h-32 border border-gray-200 rounded-lg object-cover"
+                          onError={(e) => {
+                            console.error('Failed to load UPI QR code image');
+                            // Show fallback text instead of hiding the element
+                            e.currentTarget.outerHTML = '<div class="w-32 h-32 border border-gray-200 rounded-lg flex items-center justify-center bg-gray-100 text-xs text-gray-500 text-center p-2">UPI QR Code<br/>Scan to Pay</div>';
+                          }}
                         />
                       </div>
                       <p className="text-sm text-gray-600 mb-4">

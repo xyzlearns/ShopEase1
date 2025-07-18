@@ -48,74 +48,74 @@ export class MemStorage implements IStorage {
   private seedProducts() {
     const sampleProducts: InsertProduct[] = [
       {
-        name: "Wireless Bluetooth Headphones",
-        price: 89.99,
-        category: "electronics",
+        name: "Memory Foam Mattress",
+        price: 12999,
+        category: "mattress",
         rating: 4.5,
-        image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-        description: "High-quality wireless headphones with active noise cancellation and 30-hour battery life."
+        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+        description: "Premium memory foam mattress with cooling gel technology and 10-year warranty."
       },
       {
-        name: "Organic Cotton T-Shirt",
-        price: 29.99,
-        category: "clothing",
+        name: "Orthopedic Pillow",
+        price: 1899,
+        category: "pillow",
         rating: 4.2,
-        image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-        description: "Comfortable and sustainable organic cotton t-shirt available in multiple colors."
+        image: "https://images.unsplash.com/photo-1584434128309-6d96d6818202?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+        description: "Ergonomic orthopedic pillow designed for neck and spine support with breathable fabric."
       },
       {
-        name: "Smart Home Security Camera",
-        price: 149.99,
-        category: "electronics",
+        name: "Luxury Spring Mattress",
+        price: 18999,
+        category: "mattress",
         rating: 4.7,
-        image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-        description: "HD security camera with night vision, motion detection, and mobile app control."
+        image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+        description: "High-quality spring mattress with premium comfort layers and motion isolation."
       },
       {
-        name: "Minimalist Desk Lamp",
-        price: 79.99,
+        name: "Wooden Bed Frame",
+        price: 8999,
         category: "home",
         rating: 4.3,
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-        description: "Sleek and modern desk lamp with adjustable brightness and wireless charging base."
+        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+        description: "Solid wood bed frame with modern design and sturdy construction."
       },
       {
-        name: "Premium Leather Backpack",
-        price: 159.99,
-        category: "clothing",
+        name: "Bamboo Pillow Set",
+        price: 2999,
+        category: "pillow",
         rating: 4.6,
-        image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-        description: "Handcrafted leather backpack with multiple compartments and laptop sleeve."
+        image: "https://images.unsplash.com/photo-1584434128309-6d96d6818202?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+        description: "Set of 2 bamboo fiber pillows with hypoallergenic and antimicrobial properties."
       },
       {
-        name: "Ceramic Plant Pot Set",
-        price: 39.99,
+        name: "Ceramic Table Lamp",
+        price: 1599,
         category: "home",
         rating: 4.4,
-        image: "https://images.unsplash.com/photo-1485955900006-10f4d324d411?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-        description: "Beautiful ceramic plant pots in various sizes, perfect for indoor gardening."
+        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+        description: "Beautiful ceramic table lamp with adjustable brightness and modern design."
       },
       {
-        name: "Gaming Mechanical Keyboard",
-        price: 129.99,
-        category: "electronics",
+        name: "Coir Mattress",
+        price: 7999,
+        category: "mattress",
         rating: 4.8,
-        image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-        description: "Professional gaming keyboard with RGB backlighting and mechanical switches."
+        image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+        description: "Natural coir mattress with excellent ventilation and firm support."
       },
       {
-        name: "Cashmere Blend Scarf",
-        price: 69.99,
-        category: "clothing",
+        name: "Silk Pillowcase Set",
+        price: 1299,
+        category: "pillow",
         rating: 4.5,
-        image: "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-        description: "Luxurious cashmere blend scarf in multiple colors, perfect for any season."
+        image: "https://images.unsplash.com/photo-1584434128309-6d96d6818202?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+        description: "Premium silk pillowcase set that's gentle on hair and skin."
       }
     ];
 
     sampleProducts.forEach(product => {
       const id = this.currentProductId++;
-      this.products.set(id, { ...product, id });
+      this.products.set(id, { ...product, id, rating: product.rating || 0 });
     });
   }
 
@@ -152,12 +152,12 @@ export class MemStorage implements IStorage {
     );
 
     if (existingItem) {
-      existingItem.quantity += item.quantity;
+      existingItem.quantity += item.quantity || 1;
       return existingItem;
     }
 
     const id = this.currentCartId++;
-    const cartItem: CartItem = { ...item, id };
+    const cartItem: CartItem = { ...item, id, quantity: item.quantity || 1 };
     this.cartItems.set(id, cartItem);
     return cartItem;
   }
@@ -188,6 +188,8 @@ export class MemStorage implements IStorage {
     const newOrder: Order = { 
       ...order, 
       id, 
+      status: order.status || 'pending',
+      paymentScreenshotUrl: order.paymentScreenshotUrl || null,
       createdAt: new Date() 
     };
     this.orders.set(id, newOrder);

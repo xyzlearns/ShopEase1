@@ -5,22 +5,27 @@ import type { CartItem, Product } from "@shared/schema";
 
 type CartItemWithProduct = CartItem & { product: Product };
 
-let sessionId = '';
-
-// Generate or retrieve session ID
-if (typeof window !== 'undefined') {
-  sessionId = localStorage.getItem('sessionId') || '';
+function getSessionId() {
+  if (typeof window === 'undefined') return 'default';
+  
+  let sessionId = localStorage.getItem('sessionId');
   if (!sessionId) {
-    sessionId = Math.random().toString(36).substring(2, 15);
+    sessionId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     localStorage.setItem('sessionId', sessionId);
   }
+  return sessionId;
 }
 
 export function useCart() {
   const queryClient = useQueryClient();
+  const [sessionId, setSessionId] = useState<string>('default');
+
+  useEffect(() => {
+    setSessionId(getSessionId());
+  }, []);
 
   const { data: cartItems = [], isLoading } = useQuery<CartItemWithProduct[]>({
-    queryKey: ['/api/cart'],
+    queryKey: ['/api/cart', sessionId],
     queryFn: async () => {
       const response = await fetch('/api/cart', {
         headers: {
@@ -30,6 +35,7 @@ export function useCart() {
       if (!response.ok) throw new Error('Failed to fetch cart');
       return response.json();
     },
+    enabled: sessionId !== 'default',
   });
 
   const addToCartMutation = useMutation({
@@ -39,7 +45,7 @@ export function useCart() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/cart'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/cart', sessionId] });
     },
   });
 
@@ -48,7 +54,7 @@ export function useCart() {
       return apiRequest('PUT', `/api/cart/${id}`, { quantity });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/cart'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/cart', sessionId] });
     },
   });
 
@@ -57,7 +63,7 @@ export function useCart() {
       return apiRequest('DELETE', `/api/cart/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/cart'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/cart', sessionId] });
     },
   });
 
@@ -68,7 +74,7 @@ export function useCart() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/cart'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/cart', sessionId] });
     },
   });
 

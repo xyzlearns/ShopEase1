@@ -40,7 +40,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                   />
                   <div className="flex-1">
                     <h4 className="font-medium text-sm">{item.product.name}</h4>
-                    <p className="text-sm text-gray-600">${item.product.price.toFixed(2)}</p>
+                    <p className="text-sm text-gray-600">₹{item.product.price.toFixed(0)}</p>
                     
                     <div className="flex items-center space-x-2 mt-2">
                       <Button
@@ -63,7 +63,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold">${(item.product.price * item.quantity).toFixed(2)}</p>
+                    <p className="font-semibold">₹{(item.product.price * item.quantity).toFixed(0)}</p>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -84,7 +84,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           <div className="border-t p-4">
             <div className="flex justify-between items-center mb-4">
               <span className="font-semibold">Total:</span>
-              <span className="font-bold text-lg">${cartTotal.toFixed(2)}</span>
+              <span className="font-bold text-lg">₹{cartTotal.toFixed(0)}</span>
             </div>
             <Link href="/cart" onClick={onClose}>
               <Button className="w-full bg-primary hover:bg-blue-700 text-white">

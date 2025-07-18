@@ -69,7 +69,7 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
         </div>
         
         <div className="flex items-center justify-between mb-4">
-          <span className="text-xl font-bold text-primary">${product.price.toFixed(2)}</span>
+          <span className="text-xl font-bold text-primary">₹{product.price.toFixed(0)}</span>
         </div>
         
         <div className="space-y-2">

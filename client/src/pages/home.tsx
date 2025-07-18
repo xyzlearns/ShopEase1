@@ -15,16 +15,16 @@ export default function Home() {
 
   const categories = [
     {
-      name: "Electronics",
-      value: "electronics",
-      image: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
-      description: "Latest gadgets and tech accessories"
+      name: "Mattress",
+      value: "mattress",
+      image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+      description: "Premium quality mattresses for better sleep"
     },
     {
-      name: "Fashion",
-      value: "clothing",
-      image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
-      description: "Trendy clothing and accessories"
+      name: "Pillow",
+      value: "pillow",
+      image: "https://images.unsplash.com/photo-1584434128309-6d96d6818202?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+      description: "Comfortable pillows for perfect rest"
     },
     {
       name: "Home & Living",

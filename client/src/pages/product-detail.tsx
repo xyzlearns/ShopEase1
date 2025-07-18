@@ -144,7 +144,7 @@ export default function ProductDetail() {
               <span className="ml-2 text-gray-600">({product.rating} rating)</span>
             </div>
             <p className="text-3xl font-bold text-primary mb-6">
-              ${product.price.toFixed(2)}
+              ₹{product.price.toFixed(0)}
             </p>
           </div>
 

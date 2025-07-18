@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 import type { Product } from "@shared/schema";
 
 export default function Products() {
@@ -41,14 +43,14 @@ export default function Products() {
     if (priceRange) {
       const price = product.price;
       switch (priceRange) {
-        case "0-50":
-          if (price < 0 || price > 50) return false;
+        case "0-5000":
+          if (price < 0 || price > 5000) return false;
           break;
-        case "50-100":
-          if (price < 50 || price > 100) return false;
+        case "5000-15000":
+          if (price < 5000 || price > 15000) return false;
           break;
-        case "100+":
-          if (price < 100) return false;
+        case "15000+":
+          if (price < 15000) return false;
           break;
       }
     }
@@ -103,10 +105,17 @@ export default function Products() {
   };
 
   const categories = [
-    { value: "electronics", label: "Electronics" },
-    { value: "clothing", label: "Clothing" },
+    { value: "mattress", label: "Mattress" },
+    { value: "pillow", label: "Pillow" },
     { value: "home", label: "Home & Living" },
   ];
+
+  const clearAllFilters = () => {
+    setSelectedCategories([]);
+    setPriceRange("");
+    setSelectedRatings([]);
+    setSortBy("featured");
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -115,7 +124,18 @@ export default function Products() {
         <div className="lg:w-1/4">
           <Card className="sticky top-24">
             <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Filters</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Filters</h3>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={clearAllFilters}
+                  className="text-sm text-gray-500 hover:text-gray-700"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Clear All
+                </Button>
+              </div>
               
               {/* Category Filter */}
               <div className="mb-6">
@@ -141,16 +161,16 @@ export default function Products() {
                 <h4 className="font-medium mb-3">Price Range</h4>
                 <RadioGroup value={priceRange} onValueChange={setPriceRange}>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="0-50" id="price-0-50" />
-                    <Label htmlFor="price-0-50" className="text-sm">$0 - $50</Label>
+                    <RadioGroupItem value="0-5000" id="price-0-5000" />
+                    <Label htmlFor="price-0-5000" className="text-sm">₹0 - ₹5,000</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="50-100" id="price-50-100" />
-                    <Label htmlFor="price-50-100" className="text-sm">$50 - $100</Label>
+                    <RadioGroupItem value="5000-15000" id="price-5000-15000" />
+                    <Label htmlFor="price-5000-15000" className="text-sm">₹5,000 - ₹15,000</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="100+" id="price-100+" />
-                    <Label htmlFor="price-100+" className="text-sm">$100+</Label>
+                    <RadioGroupItem value="15000+" id="price-15000+" />
+                    <Label htmlFor="price-15000+" className="text-sm">₹15,000+</Label>
                   </div>
                 </RadioGroup>
               </div>

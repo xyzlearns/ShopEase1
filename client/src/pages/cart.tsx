@@ -50,7 +50,7 @@ export default function Cart() {
                     />
                     <div className="flex-1">
                       <h4 className="font-semibold text-lg">{item.product.name}</h4>
-                      <p className="text-gray-600">${item.product.price.toFixed(2)}</p>
+                      <p className="text-gray-600">₹{item.product.price.toFixed(0)}</p>
                       <Badge className="mt-1 bg-accent text-white">
                         {item.product.category}
                       </Badge>
@@ -80,7 +80,7 @@ export default function Cart() {
                     
                     <div className="w-24 text-right">
                       <span className="font-semibold">
-                        ${(item.product.price * item.quantity).toFixed(2)}
+                        ₹{(item.product.price * item.quantity).toFixed(0)}
                       </span>
                     </div>
                     
@@ -109,7 +109,7 @@ export default function Cart() {
               <div className="space-y-3 mb-4">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>₹{subtotal.toFixed(0)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
@@ -117,12 +117,12 @@ export default function Cart() {
                 </div>
                 <div className="flex justify-between">
                   <span>Tax</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>₹{tax.toFixed(0)}</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between font-semibold text-lg">
                   <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>₹{total.toFixed(0)}</span>
                 </div>
               </div>
               <Link href="/checkout">

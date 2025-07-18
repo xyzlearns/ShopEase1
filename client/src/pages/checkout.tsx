@@ -241,11 +241,15 @@ export default function Checkout() {
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between mb-4">
                         <span className="font-medium">Pay with UPI</span>
-                        <img
-                          src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200"
-                          alt="UPI QR Code"
-                          className="w-32 h-32 border border-gray-200 rounded-lg"
-                        />
+                        <div className="w-32 h-32 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center">
+                          <div className="text-center">
+                            <div className="text-xs text-gray-500 mb-1">UPI QR Code</div>
+                            <div className="text-lg font-mono bg-white p-2 rounded">
+                              📱💳
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">Scan to Pay</div>
+                          </div>
+                        </div>
                       </div>
                       <p className="text-sm text-gray-600 mb-4">
                         Scan the QR code with any UPI app to complete your payment
@@ -307,7 +311,7 @@ export default function Checkout() {
                     <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
                   </div>
                   <span className="font-semibold">
-                    ${(item.product.price * item.quantity).toFixed(2)}
+                    ₹{(item.product.price * item.quantity).toFixed(0)}
                   </span>
                 </div>
               ))}
@@ -318,7 +322,7 @@ export default function Checkout() {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>₹{subtotal.toFixed(0)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Shipping</span>
@@ -326,12 +330,12 @@ export default function Checkout() {
               </div>
               <div className="flex justify-between">
                 <span>Tax</span>
-                <span>${tax.toFixed(2)}</span>
+                <span>₹{tax.toFixed(0)}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-semibold text-lg">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>₹{total.toFixed(0)}</span>
               </div>
             </div>
           </CardContent>

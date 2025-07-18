@@ -131,6 +131,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Cart is empty" });
       }
       
+      // Validate payment screenshot is uploaded
+      if (!req.file) {
+        return res.status(400).json({ message: "Payment screenshot is required to complete the order" });
+      }
+      
+      // Validate file type
+      const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!allowedMimeTypes.includes(req.file.mimetype)) {
+        return res.status(400).json({ message: "Invalid file type. Only JPEG, JPG and PNG images are allowed" });
+      }
+      
+      // Validate file size (max 5MB)
+      const maxFileSize = 5 * 1024 * 1024; // 5MB
+      if (req.file.size > maxFileSize) {
+        return res.status(400).json({ message: "File size too large. Maximum 5MB allowed" });
+      }
+      
       // Calculate totals
       const subtotal = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
       const tax = subtotal * 0.1;
@@ -181,7 +198,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // Create order
+      // Create order with proper payment verification status
       const order = await storage.createOrder({
         customerName: `${checkoutData.firstName} ${checkoutData.lastName}`,
         customerEmail: checkoutData.email,
@@ -194,7 +211,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         tax,
         total,
         paymentScreenshotUrl,
-        status: 'pending',
+        status: 'payment_uploaded', // Changed from 'pending' to indicate screenshot was uploaded
       });
       
       // Save to Google Sheets if configured

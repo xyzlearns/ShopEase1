@@ -84,6 +84,21 @@ Preferred communication style: Simple, everyday language.
 - **Neon Database**: Serverless PostgreSQL provider
 - **Google APIs**: Integration for file storage and sheets
 
+## Recent Changes
+
+### Payment Security Improvements (July 18, 2025)
+- **Payment Screenshot Requirement**: Orders now require payment screenshot upload before completion
+- **File Validation**: Added client and server-side validation for file type (JPEG, JPG, PNG) and size (max 5MB)
+- **UI Enhancements**: Added visual feedback for payment completion status and disabled button states
+- **Order Status**: Changed order status from 'pending' to 'payment_uploaded' when screenshot is provided
+- **Error Handling**: Improved error messages for payment-related failures
+
+### Security Measures
+- **Frontend Validation**: Complete Order button disabled until payment screenshot is uploaded
+- **Backend Validation**: Server-side validation prevents order creation without payment screenshot
+- **File Security**: Strict file type and size validation on both client and server
+- **User Feedback**: Clear messaging about payment requirements and file upload status
+
 ## Deployment Strategy
 
 ### Development Environment

@@ -71,10 +71,13 @@ export default function Checkout() {
       form.reset();
       setPaymentFile(null);
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      // Extract error message from response
+      const errorMessage = error?.message || "Failed to process your order. Please try again.";
+      
       toast({
         title: "Order failed",
-        description: "Failed to process your order. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     },
@@ -90,13 +93,51 @@ export default function Checkout() {
       return;
     }
 
+    if (!paymentFile) {
+      toast({
+        title: "Payment screenshot required",
+        description: "Please upload a payment screenshot to complete your order.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     orderMutation.mutate(data);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!allowedTypes.includes(file.type)) {
+        toast({
+          title: "Invalid file type",
+          description: "Please upload a JPEG, JPG, or PNG image.",
+          variant: "destructive",
+        });
+        e.target.value = ''; // Reset file input
+        return;
+      }
+      
+      // Validate file size (5MB max)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        toast({
+          title: "File too large",
+          description: "Please upload an image smaller than 5MB.",
+          variant: "destructive",
+        });
+        e.target.value = ''; // Reset file input
+        return;
+      }
+      
       setPaymentFile(file);
+      toast({
+        title: "File uploaded successfully",
+        description: "Payment screenshot ready for submission.",
+        variant: "default",
+      });
     }
   };
 
@@ -236,8 +277,8 @@ export default function Checkout() {
 
                 {/* Payment Method */}
                 <div className="pt-6">
-                  <h4 className="text-md font-semibold mb-4">Payment Method</h4>
-                  <Card className="border-2 border-dashed border-gray-300">
+                  <h4 className="text-md font-semibold mb-4">Payment Method *</h4>
+                  <Card className={`border-2 ${paymentFile ? 'border-green-500 bg-green-50' : 'border-dashed border-gray-300'}`}>
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between mb-4">
                         <span className="font-medium">Pay with UPI</span>
@@ -252,17 +293,21 @@ export default function Checkout() {
                       </p>
                       <div>
                         <label className="block text-sm font-medium mb-2">
-                          Upload Payment Screenshot
+                          Upload Payment Screenshot *
                         </label>
                         <Input
                           type="file"
-                          accept="image/*"
+                          accept="image/jpeg,image/jpg,image/png"
                           onChange={handleFileChange}
                           className="cursor-pointer"
+                          required
                         />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Required: Upload a screenshot of your UPI payment (JPEG, JPG, or PNG, max 5MB)
+                        </p>
                         {paymentFile && (
                           <p className="text-sm text-green-600 mt-2">
-                            File selected: {paymentFile.name}
+                            ✓ File selected: {paymentFile.name}
                           </p>
                         )}
                       </div>
@@ -272,14 +317,16 @@ export default function Checkout() {
 
                 <Button
                   type="submit"
-                  disabled={orderMutation.isPending}
-                  className="w-full bg-primary hover:bg-blue-700 text-white mt-6"
+                  disabled={orderMutation.isPending || !paymentFile}
+                  className="w-full bg-primary hover:bg-blue-700 text-white mt-6 disabled:opacity-50"
                 >
                   {orderMutation.isPending ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       Processing...
                     </>
+                  ) : !paymentFile ? (
+                    "Upload Payment Screenshot to Complete"
                   ) : (
                     "Complete Order"
                   )}

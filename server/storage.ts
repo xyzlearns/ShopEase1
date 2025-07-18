@@ -4,7 +4,9 @@ import {
   CartItem, 
   InsertCartItem, 
   Order, 
-  InsertOrder 
+  InsertOrder,
+  User,
+  InsertUser
 } from "@shared/schema";
 
 export interface IStorage {
@@ -20,27 +22,37 @@ export interface IStorage {
   removeFromCart(id: number): Promise<boolean>;
   clearCart(sessionId: string): Promise<void>;
   
+  // Users
+  createUser(user: InsertUser): Promise<User>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  getUserById(id: number): Promise<User | undefined>;
+  
   // Orders
   createOrder(order: InsertOrder): Promise<Order>;
   getOrder(id: number): Promise<Order | undefined>;
   getOrders(): Promise<Order[]>;
+  getUserOrders(userId: number): Promise<Order[]>;
 }
 
 export class MemStorage implements IStorage {
   private products: Map<number, Product>;
   private cartItems: Map<number, CartItem>;
   private orders: Map<number, Order>;
+  private users: Map<number, User>;
   private currentProductId: number;
   private currentCartId: number;
   private currentOrderId: number;
+  private currentUserId: number;
 
   constructor() {
     this.products = new Map();
     this.cartItems = new Map();
     this.orders = new Map();
+    this.users = new Map();
     this.currentProductId = 1;
     this.currentCartId = 1;
     this.currentOrderId = 1;
+    this.currentUserId = 1;
     
     this.seedProducts();
   }
@@ -202,6 +214,30 @@ export class MemStorage implements IStorage {
 
   async getOrders(): Promise<Order[]> {
     return Array.from(this.orders.values());
+  }
+
+  async getUserOrders(userId: number): Promise<Order[]> {
+    return Array.from(this.orders.values()).filter(order => order.userId === userId);
+  }
+
+  // User methods
+  async createUser(userData: InsertUser): Promise<User> {
+    const user: User = {
+      id: this.currentUserId++,
+      ...userData,
+      createdAt: new Date(),
+    };
+    
+    this.users.set(user.id, user);
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.email === email);
+  }
+
+  async getUserById(id: number): Promise<User | undefined> {
+    return this.users.get(id);
   }
 }
 

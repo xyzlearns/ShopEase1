@@ -1,14 +1,23 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { ShoppingCart, User, Menu, X } from "lucide-react";
+import { ShoppingCart, User, Menu, X, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/hooks/use-cart";
+import { useAuth } from "@/hooks/use-auth";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
 
 export function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location] = useLocation();
   const { cartCount } = useCart();
+  const { user, isAuthenticated, logout } = useAuth();
 
   const navLinks = [
     { href: "/", label: "Home" },
@@ -62,9 +71,38 @@ export function Navigation() {
               </Button>
             </Link>
             
-            <Button variant="ghost" size="sm">
-              <User className="h-5 w-5" />
-            </Button>
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem disabled>
+                    {user?.firstName} {user?.lastName}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={logout}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Link href="/login">
+                  <Button variant="ghost" size="sm">
+                    Sign in
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button size="sm">
+                    Sign up
+                  </Button>
+                </Link>
+              </div>
+            )}
 
             {/* Mobile Menu Toggle */}
             <Button

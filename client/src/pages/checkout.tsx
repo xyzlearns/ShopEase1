@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useCart } from "@/hooks/use-cart";
+import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { checkoutSchema, type CheckoutData } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
@@ -19,14 +20,15 @@ export default function Checkout() {
   const [paymentFile, setPaymentFile] = useState<File | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const { cartItems, cartTotal, sessionId } = useCart();
+  const { user } = useAuth();
   const { toast } = useToast();
 
   const form = useForm<CheckoutData>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      email: user?.email || "",
       address: "",
       city: "",
       state: "",

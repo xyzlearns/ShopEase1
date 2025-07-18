@@ -11,6 +11,7 @@ import Products from "@/pages/products";
 import ProductDetail from "@/pages/product-detail";
 import Cart from "@/pages/cart";
 import Checkout from "@/pages/checkout";
+import About from "@/pages/about";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
 import NotFound from "@/pages/not-found";
@@ -27,6 +28,7 @@ function Router() {
           <Checkout />
         </ProtectedRoute>
       </Route>
+      <Route path="/about" component={About} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       <Route component={NotFound} />

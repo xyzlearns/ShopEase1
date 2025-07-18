@@ -4,6 +4,7 @@ import multer from "multer";
 import { storage } from "./storage";
 import { insertCartItemSchema, checkoutSchema } from "@shared/schema";
 import { google } from "googleapis";
+import { Readable } from "stream";
 
 // Extend Request interface to include file property
 interface MulterRequest extends Request {
@@ -175,7 +176,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           const media = {
             mimeType: req.file.mimetype,
-            body: req.file.buffer,
+            body: Readable.from(req.file.buffer),
           };
           
           const file = await drive.files.create({

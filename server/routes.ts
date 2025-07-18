@@ -262,7 +262,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log('✅ Google Sheets Auth configured successfully');
         
         const sheets = google.sheets({ version: 'v4', auth });
-        const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+        // Extract spreadsheet ID from URL if it's a full URL
+        let spreadsheetId = process.env.GOOGLE_SHEET_ID;
+        if (spreadsheetId?.includes('/spreadsheets/d/')) {
+          const match = spreadsheetId.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+          if (match) {
+            spreadsheetId = match[1];
+          }
+        }
         
         const values = [[
           order.id,

@@ -24,9 +24,11 @@ export function useCart() {
   const { data: cartItems = [], isLoading } = useQuery<CartItemWithProduct[]>({
     queryKey: ['/api/cart', sessionId],
     queryFn: async () => {
+      const token = localStorage.getItem('auth_token');
       const response = await fetch('/api/cart', {
         headers: {
           'X-Session-Id': sessionId,
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
       });
       if (!response.ok) throw new Error('Failed to fetch cart');
@@ -36,8 +38,12 @@ export function useCart() {
 
   const addToCartMutation = useMutation({
     mutationFn: async ({ productId, quantity = 1 }: { productId: number; quantity?: number }) => {
-      return apiRequest('POST', '/api/cart', { productId, quantity }, {
-        'X-Session-Id': sessionId,
+      return apiRequest('/api/cart', {
+        method: 'POST',
+        body: JSON.stringify({ productId, quantity }),
+        headers: {
+          'X-Session-Id': sessionId,
+        },
       });
     },
     onSuccess: () => {
@@ -47,7 +53,10 @@ export function useCart() {
 
   const updateQuantityMutation = useMutation({
     mutationFn: async ({ id, quantity }: { id: number; quantity: number }) => {
-      return apiRequest('PUT', `/api/cart/${id}`, { quantity });
+      return apiRequest(`/api/cart/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ quantity }),
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/cart'] });
@@ -56,7 +65,9 @@ export function useCart() {
 
   const removeItemMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest('DELETE', `/api/cart/${id}`);
+      return apiRequest(`/api/cart/${id}`, {
+        method: 'DELETE',
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/cart'] });
@@ -65,8 +76,11 @@ export function useCart() {
 
   const clearCartMutation = useMutation({
     mutationFn: async () => {
-      return apiRequest('DELETE', '/api/cart', undefined, {
-        'X-Session-Id': sessionId,
+      return apiRequest('/api/cart', {
+        method: 'DELETE',
+        headers: {
+          'X-Session-Id': sessionId,
+        },
       });
     },
     onSuccess: () => {

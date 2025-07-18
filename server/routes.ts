@@ -1,9 +1,14 @@
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
 import { storage } from "./storage";
 import { insertCartItemSchema, checkoutSchema } from "@shared/schema";
 import { google } from "googleapis";
+
+// Extend Request interface to include file property
+interface MulterRequest extends Request {
+  file?: Express.Multer.File;
+}
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -115,7 +120,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Orders API
-  app.post("/api/orders", upload.single('paymentScreenshot'), async (req, res) => {
+  app.post("/api/orders", upload.single('paymentScreenshot'), async (req: MulterRequest, res: Response) => {
     try {
       const checkoutData = checkoutSchema.parse(req.body);
       const sessionId = req.headers['x-session-id'] as string || 'default';
@@ -203,7 +208,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
         
         const sheets = google.sheets({ version: 'v4', auth });
-        const spreadsheetId = process.env.GOOGLE_SHEETS_ID;
+        const spreadsheetId = process.env.GOOGLE_SHEET_ID;
         
         if (spreadsheetId) {
           const values = [[

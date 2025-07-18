@@ -241,15 +241,11 @@ export default function Checkout() {
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between mb-4">
                         <span className="font-medium">Pay with UPI</span>
-                        <div className="w-32 h-32 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center">
-                          <div className="text-center">
-                            <div className="text-xs text-gray-500 mb-1">UPI QR Code</div>
-                            <div className="text-lg font-mono bg-white p-2 rounded">
-                              📱💳
-                            </div>
-                            <div className="text-xs text-gray-500 mt-1">Scan to Pay</div>
-                          </div>
-                        </div>
+                        <img
+                          src="/assets/upi-qr.jpeg"
+                          alt="UPI QR Code"
+                          className="w-32 h-32 border border-gray-200 rounded-lg object-cover"
+                        />
                       </div>
                       <p className="text-sm text-gray-600 mb-4">
                         Scan the QR code with any UPI app to complete your payment

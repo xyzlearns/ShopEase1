@@ -7,16 +7,24 @@
       "config": {
         "distDir": "dist/public"
       }
-    },
-    {
-      "src": "api/index.js",
-      "use": "@vercel/node"
     }
   ],
+  "functions": {
+    "api/products.js": {
+      "runtime": "@vercel/node"
+    },
+    "api/auth/register.js": {
+      "runtime": "@vercel/node"
+    }
+  },
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/index.js"
+      "src": "/api/products",
+      "dest": "/api/products.js"
+    },
+    {
+      "src": "/api/auth/register",
+      "dest": "/api/auth/register.js"
     },
     {
       "src": "/(.*)",

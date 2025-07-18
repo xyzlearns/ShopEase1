@@ -1,6 +1,24 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import 'dotenv/config';
+
+// Debug environment variables
+console.log('🔍 Environment Variables Check:');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('GOOGLE_CLIENT_EMAIL exists:', !!process.env.GOOGLE_CLIENT_EMAIL);
+console.log('GOOGLE_PRIVATE_KEY exists:', !!process.env.GOOGLE_PRIVATE_KEY);
+console.log('GOOGLE_SHEET_ID exists:', !!process.env.GOOGLE_SHEET_ID);
+console.log('GOOGLE_DRIVE_FOLDER_ID exists:', !!process.env.GOOGLE_DRIVE_FOLDER_ID);
+if (process.env.GOOGLE_CLIENT_EMAIL) {
+  console.log('GOOGLE_CLIENT_EMAIL starts with:', process.env.GOOGLE_CLIENT_EMAIL.substring(0, 20) + '...');
+}
+if (process.env.GOOGLE_SHEET_ID) {
+  console.log('GOOGLE_SHEET_ID:', process.env.GOOGLE_SHEET_ID);
+}
+if (process.env.GOOGLE_DRIVE_FOLDER_ID) {
+  console.log('GOOGLE_DRIVE_FOLDER_ID:', process.env.GOOGLE_DRIVE_FOLDER_ID);
+}
 
 const app = express();
 app.use(express.json());

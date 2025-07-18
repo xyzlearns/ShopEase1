@@ -8,11 +8,11 @@ type CartItemWithProduct = CartItem & { product: Product };
 function getSessionId() {
   if (typeof window === 'undefined') return 'default';
   
-  let sessionId = localStorage.getItem('sessionId');
-  if (!sessionId) {
-    sessionId = 'default'; // Keep using default to match existing cart items
-    localStorage.setItem('sessionId', sessionId);
-  }
+  // Clear any existing session ID and use 'default' consistently
+  localStorage.removeItem('sessionId');
+  const sessionId = 'default';
+  localStorage.setItem('sessionId', sessionId);
+  
   console.log('Session ID:', sessionId);
   return sessionId;
 }

@@ -54,10 +54,12 @@ export default function Checkout() {
         formData.append('paymentScreenshot', paymentFile);
       }
 
+      const token = localStorage.getItem('auth_token');
       const response = await fetch('/api/orders', {
         method: 'POST',
         headers: {
           'X-Session-Id': sessionId,
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
         body: formData,
       });

@@ -159,6 +159,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Upload payment screenshot to Google Drive if provided
       if (req.file) {
         try {
+          console.log('🔄 Starting Google Drive upload process...');
+          console.log('File details:', {
+            name: req.file.originalname,
+            mimetype: req.file.mimetype,
+            size: req.file.size
+          });
+          
+          // Check if required environment variables are set
+          if (!process.env.GOOGLE_CLIENT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
+            throw new Error('Google Drive credentials not configured. Missing GOOGLE_CLIENT_EMAIL or GOOGLE_PRIVATE_KEY.');
+          }
+          
           const auth = new google.auth.GoogleAuth({
             credentials: {
               client_email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -166,6 +178,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             },
             scopes: ['https://www.googleapis.com/auth/drive.file'],
           });
+          
+          console.log('✅ Google Auth configured successfully');
           
           const drive = google.drive({ version: 'v3', auth });
           
@@ -179,12 +193,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
             body: Readable.from(req.file.buffer),
           };
           
+          console.log('🔄 Uploading file to Google Drive...');
           const file = await drive.files.create({
             requestBody: fileMetadata,
             media: media,
           });
           
+          console.log('✅ File uploaded successfully:', file.data.id);
+          
           // Make file publicly viewable
+          console.log('🔄 Setting file permissions...');
           await drive.permissions.create({
             fileId: file.data.id!,
             requestBody: {
@@ -194,8 +212,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
           
           paymentScreenshotUrl = `https://drive.google.com/file/d/${file.data.id}/view`;
+          console.log('✅ Google Drive upload completed:', paymentScreenshotUrl);
         } catch (driveError) {
-          console.error('Failed to upload to Google Drive:', driveError);
+          console.error('❌ Failed to upload to Google Drive:', driveError);
+          console.error('Drive error details:', {
+            message: driveError instanceof Error ? driveError.message : 'Unknown error',
+            stack: driveError instanceof Error ? driveError.stack : undefined
+          });
         }
       }
       
@@ -217,6 +240,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Save to Google Sheets if configured
       try {
+        console.log('🔄 Starting Google Sheets integration...');
+        
+        // Check if required environment variables are set
+        if (!process.env.GOOGLE_CLIENT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
+          throw new Error('Google Sheets credentials not configured. Missing GOOGLE_CLIENT_EMAIL or GOOGLE_PRIVATE_KEY.');
+        }
+        
+        if (!process.env.GOOGLE_SHEET_ID) {
+          throw new Error('Google Sheets ID not configured. Missing GOOGLE_SHEET_ID.');
+        }
+        
         const auth = new google.auth.GoogleAuth({
           credentials: {
             client_email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -225,36 +259,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
           scopes: ['https://www.googleapis.com/auth/spreadsheets'],
         });
         
+        console.log('✅ Google Sheets Auth configured successfully');
+        
         const sheets = google.sheets({ version: 'v4', auth });
         const spreadsheetId = process.env.GOOGLE_SHEET_ID;
         
-        if (spreadsheetId) {
-          const values = [[
-            order.id,
-            order.customerName,
-            order.customerEmail,
-            order.customerAddress,
-            order.customerCity,
-            order.customerState,
-            order.customerZip,
-            order.subtotal,
-            order.tax,
-            order.total,
-            order.status,
-            order.paymentScreenshotUrl || '',
-            order.createdAt?.toISOString() || new Date().toISOString(),
-            cartItems.map(item => `${item.product.name} (x${item.quantity})`).join('; ')
-          ]];
-          
-          await sheets.spreadsheets.values.append({
-            spreadsheetId,
-            range: 'Orders!A:N',
-            valueInputOption: 'RAW',
-            requestBody: { values },
-          });
-        }
+        const values = [[
+          order.id,
+          order.customerName,
+          order.customerEmail,
+          order.customerAddress,
+          order.customerCity,
+          order.customerState,
+          order.customerZip,
+          order.subtotal,
+          order.tax,
+          order.total,
+          order.status,
+          order.paymentScreenshotUrl || '',
+          order.createdAt?.toISOString() || new Date().toISOString(),
+          cartItems.map(item => `${item.product.name} (x${item.quantity})`).join('; ')
+        ]];
+        
+        console.log('🔄 Appending order data to Google Sheets...', {
+          spreadsheetId,
+          range: 'Orders!A:N',
+          rowData: values[0]
+        });
+        
+        const result = await sheets.spreadsheets.values.append({
+          spreadsheetId,
+          range: 'Orders!A:N',
+          valueInputOption: 'RAW',
+          requestBody: { values },
+        });
+        
+        console.log('✅ Google Sheets update completed:', {
+          updatedRows: result.data.updates?.updatedRows,
+          updatedRange: result.data.updates?.updatedRange
+        });
       } catch (sheetsError) {
-        console.error('Failed to save to Google Sheets:', sheetsError);
+        console.error('❌ Failed to save to Google Sheets:', sheetsError);
+        console.error('Sheets error details:', {
+          message: sheetsError instanceof Error ? sheetsError.message : 'Unknown error',
+          stack: sheetsError instanceof Error ? sheetsError.stack : undefined
+        });
       }
       
       // Clear cart after successful order

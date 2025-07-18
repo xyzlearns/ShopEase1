@@ -213,6 +213,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           paymentScreenshotUrl = `https://drive.google.com/file/d/${file.data.id}/view`;
           console.log('✅ Google Drive upload completed:', paymentScreenshotUrl);
+          console.log('📁 File uploaded to folder:', process.env.GOOGLE_DRIVE_FOLDER_ID);
+          console.log('🔗 Direct file link: https://drive.google.com/file/d/' + file.data.id);
+          console.log('🔗 Folder link: https://drive.google.com/drive/folders/' + process.env.GOOGLE_DRIVE_FOLDER_ID);
         } catch (driveError) {
           console.error('❌ Failed to upload to Google Drive:', driveError);
           console.error('Drive error details:', {
@@ -313,17 +316,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
           throw new Error(`Cannot access Google Sheet. Please make sure the sheet ID is correct and the service account (${process.env.GOOGLE_CLIENT_EMAIL}) has been given editor access to the sheet.`);
         }
         
-        const result = await sheets.spreadsheets.values.append({
-          spreadsheetId,
-          range: 'Orders!A:N',
-          valueInputOption: 'RAW',
-          requestBody: { values },
-        });
+        // Try to append to Sheet1 first, if that fails, try to create Orders sheet
+        let targetRange = 'Sheet1!A:N';
+        try {
+          const result = await sheets.spreadsheets.values.append({
+            spreadsheetId,
+            range: targetRange,
+            valueInputOption: 'RAW',
+            requestBody: { values },
+          });
+          console.log('✅ Successfully added to Sheet1');
+        } catch (sheetError) {
+          console.log('Sheet1 failed, trying to create Orders sheet...');
+          try {
+            // Create Orders sheet
+            await sheets.spreadsheets.batchUpdate({
+              spreadsheetId,
+              requestBody: {
+                requests: [{
+                  addSheet: {
+                    properties: {
+                      title: 'Orders'
+                    }
+                  }
+                }]
+              }
+            });
+            console.log('✅ Created Orders sheet');
+            
+            // Add headers to the new sheet
+            await sheets.spreadsheets.values.update({
+              spreadsheetId,
+              range: 'Orders!A1:N1',
+              valueInputOption: 'RAW',
+              requestBody: {
+                values: [['Order ID', 'Customer Name', 'Email', 'Address', 'City', 'State', 'ZIP', 'Subtotal', 'Tax', 'Total', 'Status', 'Payment Screenshot', 'Date', 'Items']]
+              }
+            });
+            
+            // Now append the order data
+            await sheets.spreadsheets.values.append({
+              spreadsheetId,
+              range: 'Orders!A:N',
+              valueInputOption: 'RAW',
+              requestBody: { values },
+            });
+            console.log('✅ Successfully added to Orders sheet');
+          } catch (createError) {
+            console.log('Creating Orders sheet failed, using default sheet...');
+            // Fallback to just adding to the main sheet without range
+            await sheets.spreadsheets.values.append({
+              spreadsheetId,
+              range: 'A:N',
+              valueInputOption: 'RAW',
+              requestBody: { values },
+            });
+          }
+        }
         
-        console.log('✅ Google Sheets update completed:', {
-          updatedRows: result.data.updates?.updatedRows,
-          updatedRange: result.data.updates?.updatedRange
-        });
+        console.log('✅ Google Sheets integration completed successfully');
       } catch (sheetsError) {
         console.error('❌ Failed to save to Google Sheets:', sheetsError);
         console.error('Sheets error details:', {

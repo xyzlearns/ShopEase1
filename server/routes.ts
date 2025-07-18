@@ -156,71 +156,84 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       let paymentScreenshotUrl = null;
       
-      // Upload payment screenshot to Google Drive if provided
+      // Save payment screenshot locally and provide access URL
       if (req.file) {
         try {
-          console.log('🔄 Starting Google Drive upload process...');
+          console.log('💾 Saving payment screenshot locally...');
           console.log('File details:', {
             name: req.file.originalname,
             mimetype: req.file.mimetype,
             size: req.file.size
           });
           
-          // Check if required environment variables are set
-          if (!process.env.GOOGLE_CLIENT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
-            throw new Error('Google Drive credentials not configured. Missing GOOGLE_CLIENT_EMAIL or GOOGLE_PRIVATE_KEY.');
+          // Save file locally in uploads directory
+          const fs = await import('fs');
+          const path = await import('path');
+          
+          // Create uploads directory if it doesn't exist
+          const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+          if (!fs.existsSync(uploadsDir)) {
+            fs.mkdirSync(uploadsDir, { recursive: true });
+            console.log('📁 Created uploads directory');
           }
           
-          const auth = new google.auth.GoogleAuth({
-            credentials: {
-              client_email: process.env.GOOGLE_CLIENT_EMAIL,
-              private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-            },
-            scopes: ['https://www.googleapis.com/auth/drive.file'],
-          });
+          // Generate unique filename
+          const timestamp = Date.now();
+          const fileExtension = path.extname(req.file.originalname);
+          const fileName = `payment-screenshot-${timestamp}${fileExtension}`;
+          const filePath = path.join(uploadsDir, fileName);
           
-          console.log('✅ Google Auth configured successfully');
+          // Write file to disk
+          fs.writeFileSync(filePath, req.file.buffer);
           
-          const drive = google.drive({ version: 'v3', auth });
+          // Create accessible URL
+          paymentScreenshotUrl = `/uploads/${fileName}`;
           
-          const fileMetadata = {
-            name: `payment-screenshot-${Date.now()}.jpg`,
-            parents: [process.env.GOOGLE_DRIVE_FOLDER_ID || 'root'],
-          };
+          console.log('✅ Payment screenshot saved successfully');
+          console.log('📄 File saved to:', filePath);
+          console.log('🔗 Access URL:', paymentScreenshotUrl);
           
-          const media = {
-            mimeType: req.file.mimetype,
-            body: Readable.from(req.file.buffer),
-          };
+          // Try to also upload to Google Drive as backup (non-blocking)
+          try {
+            if (process.env.GOOGLE_CLIENT_EMAIL && process.env.GOOGLE_PRIVATE_KEY) {
+              console.log('🔄 Attempting Google Drive backup upload...');
+              
+              const auth = new google.auth.GoogleAuth({
+                credentials: {
+                  client_email: process.env.GOOGLE_CLIENT_EMAIL,
+                  private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+                },
+                scopes: ['https://www.googleapis.com/auth/drive.file'],
+              });
+              
+              const drive = google.drive({ version: 'v3', auth });
+              
+              const fileMetadata = {
+                name: fileName,
+              };
+              
+              const media = {
+                mimeType: req.file.mimetype,
+                body: Readable.from(req.file.buffer),
+              };
+              
+              const driveFile = await drive.files.create({
+                requestBody: fileMetadata,
+                media: media,
+                fields: 'id,name,webViewLink',
+              });
+              
+              console.log('✅ Backup uploaded to Google Drive:', driveFile.data.id);
+            }
+          } catch (driveError) {
+            console.log('⚠️ Google Drive backup failed (non-critical):', driveError instanceof Error ? driveError.message : 'Unknown error');
+          }
           
-          console.log('🔄 Uploading file to Google Drive...');
-          const file = await drive.files.create({
-            requestBody: fileMetadata,
-            media: media,
-          });
-          
-          console.log('✅ File uploaded successfully:', file.data.id);
-          
-          // Make file publicly viewable
-          console.log('🔄 Setting file permissions...');
-          await drive.permissions.create({
-            fileId: file.data.id!,
-            requestBody: {
-              role: 'reader',
-              type: 'anyone',
-            },
-          });
-          
-          paymentScreenshotUrl = `https://drive.google.com/file/d/${file.data.id}/view`;
-          console.log('✅ Google Drive upload completed:', paymentScreenshotUrl);
-          console.log('📁 File uploaded to folder:', process.env.GOOGLE_DRIVE_FOLDER_ID);
-          console.log('🔗 Direct file link: https://drive.google.com/file/d/' + file.data.id);
-          console.log('🔗 Folder link: https://drive.google.com/drive/folders/' + process.env.GOOGLE_DRIVE_FOLDER_ID);
-        } catch (driveError) {
-          console.error('❌ Failed to upload to Google Drive:', driveError);
-          console.error('Drive error details:', {
-            message: driveError instanceof Error ? driveError.message : 'Unknown error',
-            stack: driveError instanceof Error ? driveError.stack : undefined
+        } catch (saveError) {
+          console.error('❌ Failed to save payment screenshot:', saveError);
+          console.error('Save error details:', {
+            message: saveError instanceof Error ? saveError.message : 'Unknown error',
+            stack: saveError instanceof Error ? saveError.stack : undefined
           });
         }
       }

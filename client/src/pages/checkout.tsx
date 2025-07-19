@@ -29,6 +29,7 @@ export default function Checkout() {
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
       email: user?.email || "",
+      phone: "",
       address: "",
       city: "",
       state: "",
@@ -217,6 +218,20 @@ export default function Checkout() {
                       <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input type="email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number</FormLabel>
+                      <FormControl>
+                        <Input type="tel" placeholder="Enter your phone number" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

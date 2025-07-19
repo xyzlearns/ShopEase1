@@ -1,9 +1,9 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
-import { storage } from "./storage";
-import { insertCartItemSchema, checkoutSchema, loginSchema, registerSchema } from "@shared/schema";
-import { hashPassword, comparePassword, generateToken, authenticateToken, type AuthRequest } from "./auth";
+import { storage } from "../models/storage.js";
+import { insertCartItemSchema, checkoutSchema, loginSchema, registerSchema } from "../../../database/schema.js";
+import { hashPassword, comparePassword, generateToken, authenticateToken, type AuthRequest } from "../controllers/auth.js";
 import { google } from "googleapis";
 import { Readable } from "stream";
 

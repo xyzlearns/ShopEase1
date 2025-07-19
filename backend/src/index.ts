@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "../backend/src/routes/index.js";
-import { setupVite, serveStatic, log } from "../backend/src/vite.js";
+import { registerRoutes } from "./routes/index.js";
+import { setupVite, serveStatic, log } from "./vite.js";
 
 // Debug environment variables
 console.log('🔍 Environment Variables Check:');

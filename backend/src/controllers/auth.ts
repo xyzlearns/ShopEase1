@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import { storage } from './storage';
+import { storage } from '../models/storage.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key-for-development';
 

@@ -1,24 +1,28 @@
 {
   "version": 2,
   "buildCommand": "npm run build",
-  "installCommand": "npm install",
-  "builds": [
-    {
-      "src": "dist/index.js",
-      "use": "@vercel/node@3.0.21"
+  "outputDirectory": "dist/public",
+  "functions": {
+    "api/[...all].ts": {
+      "runtime": "nodejs18.x"
     }
-  ],
+  },
   "routes": [
     {
-      "handle": "filesystem"
+      "src": "/api/(.*)",
+      "dest": "/api/[...all].ts"
     },
     {
-      "src": "/api/(.*)",
-      "dest": "/dist/index.js"
+      "src": "/uploads/(.*)",
+      "dest": "/public/uploads/$1"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/public/assets/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/dist/public/index.html"
+      "dest": "/index.html"
     }
   ]
 }

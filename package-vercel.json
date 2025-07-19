@@ -1,0 +1,19 @@
+{
+  "name": "shopspace-vercel",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "start": "node api/products.js"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4",
+    "bcryptjs": "^3.0.2",
+    "drizzle-orm": "^0.39.1",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.19",
+    "@vitejs/plugin-react": "^4.3.2"
+  }
+}

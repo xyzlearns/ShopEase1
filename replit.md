@@ -86,6 +86,12 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Vercel Deployment Fix (July 19, 2025)
+- **Vercel Configuration**: Fixed invalid runtime version error in vercel.json by specifying @vercel/node@3.0.21
+- **Legacy API Cleanup**: Removed old serverless function files that were causing deployment conflicts
+- **Build Process**: Configured proper build commands and routing for Express.js + Vite deployment
+- **File Structure**: Set up correct routing for API endpoints and static assets in Vercel
+
 ### Database Configuration Fix (July 19, 2025)
 - **Environment Variable Issue**: Fixed DATABASE_URL not being available during application startup
 - **PostgreSQL Database**: Properly provisioned PostgreSQL database with connection details

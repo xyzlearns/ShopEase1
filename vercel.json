@@ -1,10 +1,24 @@
 {
-  "functions": {
-    "api/products.js": {
-      "runtime": "@vercel/node"
-    },
-    "api/auth/register.js": {
-      "runtime": "@vercel/node"
+  "version": 2,
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "builds": [
+    {
+      "src": "dist/index.js",
+      "use": "@vercel/node@3.0.21"
     }
-  }
+  ],
+  "routes": [
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/dist/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/dist/public/index.html"
+    }
+  ]
 }

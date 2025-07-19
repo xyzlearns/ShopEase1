@@ -33,7 +33,7 @@ export function Navigation() {
           <div className="flex items-center">
             <Link href="/">
               <h1 className="text-2xl font-bold font-poppins text-primary cursor-pointer">
-                ShopSpace
+                ShopEase
               </h1>
             </Link>
           </div>

@@ -4,10 +4,8 @@ import { drizzle } from 'drizzle-orm/neon-serverless';
 import { users } from '../../shared/schema.js';
 import { eq } from 'drizzle-orm';
 
-// Configure Neon for serverless
-if (typeof window === 'undefined') {
-  neonConfig.webSocketConstructor = require('ws');
-}
+// Configure Neon
+neonConfig.webSocketConstructor = require('ws');
 
 let db;
 if (process.env.DATABASE_URL) {
